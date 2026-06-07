@@ -99,6 +99,60 @@ def cadastrar_objeto(objetos):
 
     return objetos
 
+def classificar_risco(distancia):
+    if distancia < 10:
+        return "CRÍTICO"
+    elif distancia < 50:
+        return "MÉDIO"
+    else:
+        return "BAIXO"
+
+
+def simular_trajetoria(objetos):
+    print("\n" + "-" * 50)
+    print("  SIMULAR TRAJETÓRIA E DETECTAR COLISÃO")
+    print("-" * 50)
+
+    # Verifica se há objetos suficientes
+    if len(objetos) < 2:
+        print("É necessário cadastrar ao menos 2 objetos para simular.")
+        print("Vá ao menu e use a opção 2 para cadastrar.")
+        input("\nPressione ENTER para voltar ao menu...")
+        return
+
+    print(f"{len(objetos)} objetos encontrados. Analisando pares...\n")
+
+    encontrou_risco = False
+
+    # Percorre todos os pares de objetos
+    for i in range(len(objetos)):
+        for j in range(i + 1, len(objetos)):
+            obj_a = objetos[i]
+            obj_b = objetos[j]
+
+            # Calcula distância de altitude entre os dois objetos
+            distancia = abs(obj_a["altitude_km"] - obj_b["altitude_km"])
+            risco = classificar_risco(distancia)
+
+            print(f"Par analisado: {obj_a['nome']} x {obj_b['nome']}")
+            print(f"Altitude {obj_a['nome']}: {obj_a['altitude_km']} km")
+            print(f"Altitude {obj_b['nome']}: {obj_b['altitude_km']} km")
+            print(f"Distância entre objetos : {distancia:.1f} km")
+            print(f"Nível de risco          : {risco}")
+            print()
+
+            if risco == "CRÍTICO":
+                encontrou_risco = True
+
+    if encontrou_risco:
+        print("ATENÇÃO: Há pares em risco CRÍTICO!")
+        print("Use a opção 4 para recomendar manobras de desvio.")
+    else:
+        print("Nenhum par em risco crítico no momento.")
+
+    print("-" * 50)
+    input("\n  Pressione ENTER para voltar ao menu...")
+
 # SISTEMA PRINCIPAL
 def main():
     global objetos_orbitais
@@ -112,7 +166,7 @@ def main():
             case "2":
                 objetos_orbitais = cadastrar_objeto(objetos_orbitais)
             case "3":
-                print("\n[em breve] Simular trajetória")
+                simular_trajetoria(objetos_orbitais)
             case "4":
                 print("\n[em breve] Recomendar manobra")
             case "5":
