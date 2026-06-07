@@ -153,6 +153,74 @@ def simular_trajetoria(objetos):
     print("-" * 50)
     input("\n  Pressione ENTER para voltar ao menu...")
 
+def recomendar_manobra(objetos):
+    print("\n" + "-" * 50)
+    print("  RECOMENDAR MANOBRA DE DESVIO")
+    print("-" * 50)
+
+    if len(objetos) < 2:
+        print("É necessário ao menos 2 objetos cadastrados.")
+        print("Use a opção 2 para cadastrar objetos.")
+        input("\n  Pressione ENTER para voltar ao menu...")
+        return
+
+    pares_criticos = []
+
+    # Encontra todos os pares em risco crítico
+    for i in range(len(objetos)):
+        for j in range(i + 1, len(objetos)):
+            obj_a = objetos[i]
+            obj_b = objetos[j]
+            distancia = abs(obj_a["altitude_km"] - obj_b["altitude_km"])
+
+            if distancia < 10:
+                pares_criticos.append((obj_a, obj_b, distancia))
+
+    if not pares_criticos:
+        print("Nenhum par em risco crítico encontrado.")
+        print("Nenhuma manobra necessária no momento.")
+        input("\n  Pressione ENTER para voltar ao menu...")
+        return
+
+    print(f"  {len(pares_criticos)} par(es) em risco crítico. Gerando recomendações...\n")
+
+    for idx, (obj_a, obj_b, distancia) in enumerate(pares_criticos, 1):
+        print(f"  {'─' * 46}")
+        print(f"  Ocorrência {idx}: {obj_a['nome']} x {obj_b['nome']}")
+        print(f"  Distância atual: {distancia:.1f} km  |  Risco: CRÍTICO")
+        print()
+
+        # Define qual objeto deve desviar (prioriza satélite ativo)
+        # Se ambos forem do mesmo tipo, desvia o de maior altitude
+        match (obj_a["tipo"], obj_b["tipo"]):
+            case ("Satélite Ativo", "Detrito") | ("Satélite Ativo", "Satélite Inativo"):
+                objeto_desvia = obj_a
+                objeto_fixo   = obj_b
+            case ("Detrito", "Satélite Ativo") | ("Satélite Inativo", "Satélite Ativo"):
+                objeto_desvia = obj_b
+                objeto_fixo   = obj_a
+            case _:
+                # Ambos do mesmo tipo: desvia o de maior altitude
+                objeto_desvia = obj_a if obj_a["altitude_km"] >= obj_b["altitude_km"] else obj_b
+                objeto_fixo   = obj_b if objeto_desvia == obj_a else obj_a
+
+        # Calcula nova altitude segura (desvio de 20 km acima do fixo)
+        delta = 20.0
+        nova_altitude = objeto_fixo["altitude_km"] + delta
+        combustivel   = calcular_combustivel(delta)
+
+        print(f"  Objeto a desviar : {objeto_desvia['nome']} ({objeto_desvia['tipo']})")
+        print(f"  Objeto fixo      : {objeto_fixo['nome']} ({objeto_fixo['tipo']})")
+        print(f"  Altitude atual   : {objeto_desvia['altitude_km']} km")
+        print(f"  Nova altitude    : {nova_altitude:.1f} km  (+{delta} km acima do objeto fixo)")
+        print(f"  Combustível est. : {combustivel} kg")
+        print(f"  Direção          : Elevar órbita")
+        print()
+
+    print("Recomenda-se executar as manobras em até 24h.")
+    print("-" * 50)
+    input("\n  Pressione ENTER para voltar ao menu...")
+
 # SISTEMA PRINCIPAL
 def main():
     global objetos_orbitais
@@ -168,7 +236,7 @@ def main():
             case "3":
                 simular_trajetoria(objetos_orbitais)
             case "4":
-                print("\n[em breve] Recomendar manobra")
+                recomendar_manobra(objetos_orbitais)
             case "5":
                 print("\n[em breve] Gerar relatório")
             case "0":
