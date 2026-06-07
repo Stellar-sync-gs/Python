@@ -13,7 +13,20 @@ def exibir_menu():
     print("  0. Sair")
     print("=" * 50)
 
+def sobre_sistema():
+    print("\n" + "-" * 50)
+    print("  SOBRE O STELLAR SYNC")
+    print("-" * 50)
+    print(f""" O Stellar Sync é um sistema de gestão de tráfego
+    orbital que monitora satélites e detritos espaciais.
+    Detecta riscos de colisão e recomenda manobras
+    coordenadas para evitar acidentes e reduzir o
+    desperdício de combustível nas operações espaciais
+    """)
+    print("-" * 50)
+    input("\n  Pressione ENTER para voltar ao menu...")
 
+# SISTEMA PRINCIPAL
 def main():
     while True:
         exibir_menu()
@@ -21,7 +34,7 @@ def main():
 
         match opcao:
             case "1":
-                print("\n[em breve] Sobre o sistema")
+                sobre_sistema()
             case "2":
                 print("\n[em breve] Cadastrar objeto orbital")
             case "3":
