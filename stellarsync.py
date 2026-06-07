@@ -221,6 +221,77 @@ def recomendar_manobra(objetos):
     print("-" * 50)
     input("\n  Pressione ENTER para voltar ao menu...")
 
+def gerar_relatorio(objetos):
+    print("\n" + "=" * 50)
+    print("       RELATÓRIO DE RISCO — STELLAR SYNC")
+    print("=" * 50)
+
+    if not objetos:
+        print("     Nenhum objeto cadastrado. Relatório vazio.")
+        print("     Use a opção 2 para cadastrar objetos.")
+        input("\n  Pressione ENTER para voltar ao menu...")
+        return
+
+    # ── Seção 1: objetos cadastrados ──
+    print(f"\n  OBJETOS MONITORADOS ({len(objetos)} no total)")
+    print("  " + "-" * 46)
+    print(f"  {'ID':<5} {'Nome':<14} {'Tipo':<20} {'Alt(km)':<10} {'Vel(km/s)'}")
+    print("  " + "-" * 46)
+
+    for obj in objetos:
+        print(f"  {obj['id']:<5} {obj['nome']:<14} {obj['tipo']:<20} "
+            f"{obj['altitude_km']:<10} {obj['velocidade_kms']}")
+
+    # ── Seção 2: análise de pares ──
+    print(f"\n  ANÁLISE DE PARES ORBITAIS")
+    print("  " + "-" * 46)
+
+    total_critico = 0
+    total_medio   = 0
+    total_baixo   = 0
+
+    for i in range(len(objetos)):
+        for j in range(i + 1, len(objetos)):
+            obj_a     = objetos[i]
+            obj_b     = objetos[j]
+            distancia = abs(obj_a["altitude_km"] - obj_b["altitude_km"])
+            risco     = classificar_risco(distancia)
+
+            print(f"  {obj_a['nome']} x {obj_b['nome']}")
+            print(f"     Distância : {distancia:.1f} km  |  {risco}")
+
+            if "CRÍTICO" in risco:
+                total_critico += 1
+            elif "MÉDIO" in risco:
+                total_medio += 1
+            else:
+                total_baixo += 1
+
+    # ── Seção 3: resumo ──
+    total_pares = total_critico + total_medio + total_baixo
+
+    print(f"\n  RESUMO GERAL")
+    print("  " + "-" * 46)
+    print(f"  Total de objetos monitorados : {len(objetos)}")
+    print(f"  Total de pares analisados    : {total_pares}")
+    print(f"      Pares em risco CRÍTICO    : {total_critico}")
+    print(f"      Pares em risco MÉDIO      : {total_medio}")
+    print(f"      Pares em risco BAIXO      : {total_baixo}")
+ 
+    # Situação geral com if-elif-else
+    print(f"\n  SITUAÇÃO GERAL DO TRÁFEGO ORBITAL:")
+    if total_critico > 0:
+        print(f"ALERTA — {total_critico} par(es) exigem manobra imediata!")
+        print(f"Execute a opção 4 para ver as recomendações.")
+    elif total_medio > 0:
+        print(f"ATENÇÃO — Há pares em risco médio. Monitorar.")
+    else:
+        print(f"TRÁFEGO ESTÁVEL — Nenhum risco crítico detectado.")
+
+    print("=" * 50)
+    input("\n  Pressione ENTER para voltar ao menu...")
+
+
 # SISTEMA PRINCIPAL
 def main():
     global objetos_orbitais
@@ -238,13 +309,12 @@ def main():
             case "4":
                 recomendar_manobra(objetos_orbitais)
             case "5":
-                print("\n[em breve] Gerar relatório")
+                gerar_relatorio(objetos_orbitais)
             case "0":
                 print("\nEncerrando o Stellar Sync. Até logo!")
                 break
             case _:
                 print("\nOpção inválida. Digite um número entre 0 e 5.")
-
 
 if __name__ == "__main__":
     main()
