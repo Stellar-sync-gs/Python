@@ -26,17 +26,91 @@ def sobre_sistema():
     print("-" * 50)
     input("\n  Pressione ENTER para voltar ao menu...")
 
+# Lista global que armazena todos os objetos orbitais cadastrados
+objetos_orbitais = []
+
+def cadastrar_objeto(objetos):
+    print("\n" + "-" * 50)
+    print("CADASTRAR OBJETO ORBITAL")
+    print("-" * 50)
+
+    # Nome
+    while True:
+        nome = input("Nome do objeto (ex: SAT-01, DETRITO-A): ").strip().upper()
+        if nome:
+            break
+        print("Nome não pode ser vazio.")
+
+    # Tipo com match-case
+    print("Tipos disponíveis: 1 - Satélite Ativo  |  2 - Detrito  |  3 - Satélite Inativo")
+    while True:
+        tipo_opcao = input("Escolha o tipo (1/2/3): ").strip()
+        match tipo_opcao:
+            case "1":
+                tipo = "Satélite Ativo"
+                break
+            case "2":
+                tipo = "Detrito"
+                break
+            case "3":
+                tipo = "Satélite Inativo"
+                break
+            case _:
+                print("Opção inválida. Digite 1, 2 ou 3.")
+
+    # Altitude
+    while True:
+        try:
+            altitude = float(input("Altitude orbital (km, entre 160 e 2000): "))
+            if 160 <= altitude <= 2000:
+                break
+            print("Altitude deve estar entre 160 km e 2000 km.")
+        except ValueError:
+            print("Digite um número válido.")
+
+    # Velocidade
+    while True:
+        try:
+            velocidade = float(input("Velocidade orbital (km/s, entre 6 e 10): "))
+            if 6 <= velocidade <= 10:
+                break
+            print("Velocidade deve estar entre 6 e 10 km/s.")
+        except ValueError:
+            print("Digite um número válido.")
+
+    # Monta o objeto como dicionário e adiciona à lista
+    objeto = {
+        "id": len(objetos) + 1,
+        "nome": nome,
+        "tipo": tipo,
+        "altitude_km": altitude,
+        "velocidade_kms": velocidade
+    }
+    objetos.append(objeto)
+
+    print("\nObjeto cadastrado com sucesso!")
+    print(f"     ID       : {objeto['id']}")
+    print(f"     Nome     : {objeto['nome']}")
+    print(f"     Tipo     : {objeto['tipo']}")
+    print(f"     Altitude : {objeto['altitude_km']} km")
+    print(f"     Velocidade: {objeto['velocidade_kms']} km/s")
+    print("-" * 50)
+    input("\n  Pressione ENTER para voltar ao menu...")
+
+    return objetos
+
 # SISTEMA PRINCIPAL
 def main():
+    global objetos_orbitais
     while True:
         exibir_menu()
-        opcao = input("  Escolha uma opção: ").strip()
+        opcao = input("Escolha uma opção: ").strip()
 
         match opcao:
             case "1":
                 sobre_sistema()
             case "2":
-                print("\n[em breve] Cadastrar objeto orbital")
+                objetos_orbitais = cadastrar_objeto(objetos_orbitais)
             case "3":
                 print("\n[em breve] Simular trajetória")
             case "4":
@@ -44,10 +118,10 @@ def main():
             case "5":
                 print("\n[em breve] Gerar relatório")
             case "0":
-                print("\n  Encerrando o Stellar Sync. Até logo!")
+                print("\nEncerrando o Stellar Sync. Até logo!")
                 break
             case _:
-                print("\n  Opção inválida. Digite um número entre 0 e 5.")
+                print("\nOpção inválida. Digite um número entre 0 e 5.")
 
 
 if __name__ == "__main__":
