@@ -277,7 +277,7 @@ def gerar_relatorio(objetos):
     print(f"      Pares em risco CRÍTICO    : {total_critico}")
     print(f"      Pares em risco MÉDIO      : {total_medio}")
     print(f"      Pares em risco BAIXO      : {total_baixo}")
- 
+
     # Situação geral com if-elif-else
     print(f"\n  SITUAÇÃO GERAL DO TRÁFEGO ORBITAL:")
     if total_critico > 0:
